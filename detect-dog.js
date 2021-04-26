@@ -23,6 +23,8 @@ const liveView = document.getElementById('liveView');
 const demosSection = document.getElementById('demos');
 const enableWebcamButton = document.getElementById('webcamButton');
 
+
+
 // Check if webcam access is supported.
 function getUserMediaSupported() {
     return !!(navigator.mediaDevices &&
@@ -36,10 +38,6 @@ if (getUserMediaSupported()) {
     enableWebcamButton.addEventListener('click', enableCam);
 } else {
     console.warn('getUserMedia() is not supported by your browser');
-}
-
-// Placeholder function for next step. Paste over this in the next step.
-function enableCam(event) {
 }
 
 // Enable the live webcam view and start classification.
@@ -80,6 +78,18 @@ cocoSsd.load().then(function (loadedModel) {
 
 var children = [];
 
+
+const cooldown = 100000
+let cooldownActive = false
+let newRequest = Date.now()
+const startDate = 1619379939260
+
+function checkCooldown() {
+    if ((startDate + cooldown) > newRequest) { cooldownActive = true; console.log('active') } else { cooldownActive = true; 'not active' }
+}
+
+const predictionOutput = document.getElementById('prediction')
+
 function predictWebcam() {
     // Now let's start classifying a frame in the stream.
     model.detect(video).then(function (predictions) {
@@ -94,25 +104,25 @@ function predictWebcam() {
         for (let n = 0; n < predictions.length; n++) {
             // If we are over 66% sure we are sure we classified it right, draw it!
             if (predictions[n].score > 0.66) {
-                const p = document.createElement('p');
+                const p = predictionOutput
                 p.innerText = predictions[n].class + ' - with '
                     + Math.round(parseFloat(predictions[n].score) * 100)
                     + '% confidence.';
-                p.style = 'margin-left: ' + predictions[n].bbox[0] + 'px; margin-top: '
-                    + (predictions[n].bbox[1] - 10) + 'px; width: '
-                    + (predictions[n].bbox[2] - 10) + 'px; top: 0; left: 0;';
 
-                const highlighter = document.createElement('div');
-                highlighter.setAttribute('class', 'highlighter');
-                highlighter.style = 'left: ' + predictions[n].bbox[0] + 'px; top: '
-                    + predictions[n].bbox[1] + 'px; width: '
-                    + predictions[n].bbox[2] + 'px; height: '
-                    + predictions[n].bbox[3] + 'px;';
-
-                liveView.appendChild(highlighter);
                 liveView.appendChild(p);
-                children.push(highlighter);
                 children.push(p);
+            }
+            if (predictions[n].class === 'dog') {
+                setTimeout(function () {
+                    if (predictions[n].class === 'dog' && cooldownActive === false) {
+                        console.log('person for 10 seconds')
+                        const Http = new XMLHttpRequest();
+                        const url = 'https://us-central1-dog-shit-5046c.cloudfunctions.net/sendMail?dest=frankroodnat@gmail.com'
+                        Http.open('GET', url);
+                        Http.send();
+                        cooldownActive = true
+                    }
+                }, 10000);
             }
         }
 

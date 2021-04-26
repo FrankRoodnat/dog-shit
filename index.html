@@ -27,7 +27,15 @@
 
       <div id="liveView" class="camView">
         <button id="webcamButton">Enable Webcam</button>
-        <video id="webcam" autoplay width="640" height="480"></video>
+        <button onclick="checkCooldown()">Cooldown?</button>
+        <div id="prediction"></div>
+        <video
+          style="display: none"
+          id="webcam"
+          autoplay
+          width="640"
+          height="480"
+        ></video>
       </div>
     </section>
 
@@ -40,6 +48,26 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
 
     <!-- Import the page's JavaScript to do some stuff -->
-    <script src="script.js" defer></script>
+    <script src="detect-dog.js" defer></script>
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.4.2/firebase-app.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+
+    <script>
+      // Your web app's Firebase configuration
+      var firebaseConfig = {
+        apiKey: "AIzaSyCCcngYtaEJdPy9vbEENxkyZLCbAZeTnTQ",
+        authDomain: "dog-shit-5046c.firebaseapp.com",
+        projectId: "dog-shit-5046c",
+        storageBucket: "dog-shit-5046c.appspot.com",
+        messagingSenderId: "443339294009",
+        appId: "1:443339294009:web:8bf245314898e189f854e8",
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+    </script>
   </body>
 </html>
